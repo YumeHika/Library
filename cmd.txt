@@ -1,0 +1,13 @@
+#Postgres
+docker run --name postgres -e POSTGRES_USER=sa -e POSTGRES_PASSWORD=su290303 -e POSTGRES_DB=mydb -p 5432:5432 -d postgres
+
+# Create a new virtual environment
+python -m venv venv
+# Activate the new virtual environment
+# Windows
+venv\Scripts\activate
+# Install package from requirements
+pip install -r requirements.txt
+
+#Run
+uvicorn app.main:app --reload

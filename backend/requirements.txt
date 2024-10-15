@@ -1,0 +1,7 @@
+fastapi
+uvicorn
+sqlalchemy
+pydantic
+setuptools 
+wheel
+psycopg2-binary
