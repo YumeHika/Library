@@ -1,0 +1,9 @@
+We use Postgres for Database
+
+CREATE TABLE public.books (
+	id int4 GENERATED ALWAYS AS IDENTITY( INCREMENT BY 1 MINVALUE 1 MAXVALUE 2147483647 START 1 CACHE 1 NO CYCLE) NOT NULL,
+	title varchar NULL,
+	author varchar NULL,
+	description varchar NULL,
+	CONSTRAINT books_pk PRIMARY KEY (id)
+);
