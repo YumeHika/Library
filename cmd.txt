@@ -1,5 +1,10 @@
 #Postgres
+docker pull postgres
 docker run --name postgres -e POSTGRES_USER=sa -e POSTGRES_PASSWORD=su290303 -e POSTGRES_DB=mydb -p 5432:5432 -d postgres
+
+#MinIO
+docker pull minio/minio
+docker run -p 9000:9000 -p 9090:9090 --name minio-server -v D:/dev/minio:/data -e MINIO_ROOT_USER=saa -e MINIO_ROOT_PASSWORD=su290303 minio/minio server /data --console-address ":9090"
 
 # Create a new virtual environment for window
 python -m venv venv

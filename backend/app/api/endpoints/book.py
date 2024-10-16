@@ -2,7 +2,8 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from db.session import SessionLocal
-from models.models import Book
+from models.models import Book, File
+from lib.minio import MinioClientAPI
 import logging
 logger = logging.getLogger(__name__)
 
@@ -29,6 +30,12 @@ async def create_book(book: dict, db: Session = Depends(get_db)):
     db.add(db_book)
     db.commit()
     db.refresh(db_book)
+    # upload file to minio
+    minio_api = MinioClientAPI("localhost:9000", "saa", "su290303", secure=False)
+    url = minio_api.generate_presigned_url("mybucket", book['file_name'])
     # log create book
     logger.info("create book success")
-    return {"message": "Book created", "book": db_book}
+    return {"message": "Book created", "book": db_book, "presigned_url": url}
+
+
+

@@ -13,13 +13,25 @@ const AddBook: React.FC<AddBookProps> = ({ onAddBook }) => {
     const [author, setAuthor] = useState('');
     const [description, setDescription] = useState('');
     const [notification, setNotification] = useState('');
+    const [file_name, setFileName] = useState('');
+    const [file, setFile] = useState<File | null>(null);
     const navigate = useNavigate();
+
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            setFileName(file.name);
+            setFile(file);
+        }
+    };
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         const newBook: Book = {
             title,
             author,
             description,
+            file_name,
         };
 
         // API request to add the new book
@@ -37,6 +49,27 @@ const AddBook: React.FC<AddBookProps> = ({ onAddBook }) => {
             }
 
             const data = await response.json();
+            const presignedUrl = data.presigned_url;
+
+            // Log the presigned URL and the file name
+            console.log('Presigned URL:', presignedUrl);
+            console.log('File to upload:', file);
+            console.log('File name:', file_name);
+
+            // Upload the file to MinIO using the presigned URL
+            if (file && presignedUrl) {
+                const uploadResponse = await fetch(presignedUrl, {
+                    method: 'PUT',
+                    body: file,
+                    headers: {
+                        'Content-Type': file.type, // Set the content type based on the file
+                    },
+                });
+
+                if (!uploadResponse.ok) {
+                    throw new Error('File upload failed');
+                }
+            }
             onAddBook(data); // Use the response data if necessary
             setNotification('Book added successfully!'); // Set success message
             setTimeout(() => {
@@ -49,6 +82,8 @@ const AddBook: React.FC<AddBookProps> = ({ onAddBook }) => {
         setTitle('');
         setAuthor('');
         setDescription('');
+        setFileName('');
+        setFile(null);
     };
 
     return (
@@ -95,6 +130,23 @@ const AddBook: React.FC<AddBookProps> = ({ onAddBook }) => {
                         onChange={(e) => setDescription(e.target.value)}
                         required
                     />
+                </div>
+                <div>
+                    <label className="block text-sm font-medium leading-6 text-gray-900">
+                        Upload File
+                    </label>
+                    <div className="mt-2">
+                        <input
+                            type="file"
+                            onChange={handleFileChange}
+                            className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 pl-1"
+                        />
+                        {file_name && (
+                            <p className="mt-1 text-sm text-gray-600">
+                                Selected file: {file_name}
+                            </p>
+                        )}
+                    </div>
                 </div>
                 <div>
                     <button

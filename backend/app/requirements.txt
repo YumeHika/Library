@@ -5,3 +5,4 @@ pydantic
 setuptools 
 wheel
 psycopg2-binary
+minio
